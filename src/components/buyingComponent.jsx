@@ -11,7 +11,8 @@ export function SignInThree() {
   const [ethToPay, setEthToPay] = useState(0);
   const [web3, setWeb3] = useState(null);
   const [tokenSaleContract, setTokenSaleContract] = useState(null);
-  const [transactionSuccess, setTransactionSuccess] = useState(false); // New state variable
+  const [transactionSuccess, setTransactionSuccess] = useState(false);
+  const [loading, setLoading] = useState(false); // New state variable for loading status
 
   useEffect(() => {
     // Initialize web3 and set the provider
@@ -46,17 +47,20 @@ export function SignInThree() {
     if (!tokenSaleContract || !web3) return;
 
     try {
+      setLoading(true); // Set loading state to true when transaction begins
       const accounts = await web3.eth.getAccounts();
       const numberOfTokens = web3.utils.toWei(dsCoinQuantity.toString(), 'ether'); // Convert to Wei
       const tx = await tokenSaleContract.methods.buy(accounts[0]).send({ from: accounts[0], value: web3.utils.toWei(ethToPay.toString(), 'ether') });
       console.log(tx);
       alert('Transaction successful!');
-      setTransactionSuccess(true); // Set transaction success state to true
+      setTransactionSuccess(true);
       setDsCoinQuantity('');
       setEthToPay(0);
     } catch (error) {
       console.error(error);
       alert('Transaction failed!');
+    } finally {
+      setLoading(false); // Set loading state to false when transaction completes
     }
   };
 
@@ -94,7 +98,7 @@ export function SignInThree() {
                   ETH You Have To Pay:
                 </label>
                 <p className="text-sm font-bold text-black ">
-                  1 DSCOIN at just 0.0005 ether
+                  1 DSC at just 0.0005 ether
                 </p>
               </div>
               <div className="mt-2">
@@ -108,12 +112,17 @@ export function SignInThree() {
               <button
                 type="button"
                 onClick={web3 ? handleBuyNow : handleConnectWallet}
-                disabled={transactionSuccess} // Disable button if transaction success
+                disabled={transactionSuccess || loading} // Disable button if transaction success or loading
                 className={`inline-flex w-full items-center justify-center rounded-md bg-black px-3.5 py-2.5 font-semibold leading-7 text-white hover:bg-black/80 ${
                   web3 ? '' : 'cursor-pointer'
                 }`}
               >
-                {web3 ? (
+                {loading ? ( // Show loader if loading is true
+                  <div className="flex items-center">
+                    <div className="h-4 w-4 border-t-2 border-b-2 border-white rounded-full animate-spin mr-2"></div>
+                    Processing...
+                  </div>
+                ) : web3 ? (
                   <>
                     BUY NOW <ArrowRight className="ml-2" size={16} />
                   </>

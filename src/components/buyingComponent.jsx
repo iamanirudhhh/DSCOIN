@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import Web3 from 'web3'; // Make sure to install web3 via npm
@@ -12,6 +11,7 @@ export function SignInThree() {
   const [ethToPay, setEthToPay] = useState(0);
   const [web3, setWeb3] = useState(null);
   const [tokenSaleContract, setTokenSaleContract] = useState(null);
+  const [transactionSuccess, setTransactionSuccess] = useState(false); // New state variable
 
   useEffect(() => {
     // Initialize web3 and set the provider
@@ -51,6 +51,7 @@ export function SignInThree() {
       const tx = await tokenSaleContract.methods.buy(accounts[0]).send({ from: accounts[0], value: web3.utils.toWei(ethToPay.toString(), 'ether') });
       console.log(tx);
       alert('Transaction successful!');
+      setTransactionSuccess(true); // Set transaction success state to true
       setDsCoinQuantity('');
       setEthToPay(0);
     } catch (error) {
@@ -58,6 +59,14 @@ export function SignInThree() {
       alert('Transaction failed!');
     }
   };
+
+  useEffect(() => {
+    // Reset transaction success state after 5 seconds
+    const resetTransactionState = setTimeout(() => {
+      setTransactionSuccess(false);
+    }, 5000);
+    return () => clearTimeout(resetTransactionState);
+  }, [transactionSuccess]);
 
   return (
     <section>
@@ -85,7 +94,7 @@ export function SignInThree() {
                   ETH You Have To Pay:
                 </label>
                 <p className="text-sm font-bold text-black ">
-                  1 DSC at just 0.0005 ether
+                  1 DSCOIN at just 0.0005 ether
                 </p>
               </div>
               <div className="mt-2">
@@ -99,6 +108,7 @@ export function SignInThree() {
               <button
                 type="button"
                 onClick={web3 ? handleBuyNow : handleConnectWallet}
+                disabled={transactionSuccess} // Disable button if transaction success
                 className={`inline-flex w-full items-center justify-center rounded-md bg-black px-3.5 py-2.5 font-semibold leading-7 text-white hover:bg-black/80 ${
                   web3 ? '' : 'cursor-pointer'
                 }`}

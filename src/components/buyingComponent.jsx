@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import Web3 from 'web3'; // Make sure to install web3 via npm

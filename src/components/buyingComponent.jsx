@@ -98,7 +98,7 @@ export function SignInThree() {
                   ETH You Have To Pay:
                 </label>
                 <p className="text-sm font-bold text-black ">
-                  1 DSC at just 0.0005 ether
+                  1 DSC COIN at just 0.0005 ether
                 </p>
               </div>
               <div className="mt-2">

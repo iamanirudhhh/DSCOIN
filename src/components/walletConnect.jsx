@@ -56,8 +56,8 @@ function ButtonDisplay() {
                     type: 'ERC20',
                     options: {
                         address: Contract.Dscaddress, // Token contract address
-                        symbol: Contract.symbol, // Token symbol
-                        decimals: Contract.decimals, // Token decimals
+                        symbol: 'DSC' , // Token symbol
+                        decimals: 18, // Token decimals
                     }
                 }
             });
@@ -66,6 +66,7 @@ function ButtonDisplay() {
             setTokenImported(true); // Set tokenImported state to true
         } catch (error) {
             console.error("Error adding token to MetaMask:", error);
+            alert("Failed to add token. Please try again.");
         }
     };
 

@@ -43,15 +43,18 @@ export function SignInThree() {
   };
 
   
-  
   const handleConnectWallet = async () => {
-    if (!web3) return;
+    if (!window.ethereum) {
+      alert("Please install MetaMask!");
+      return;
+    }
     try {
       await window.ethereum.request({ method: 'eth_requestAccounts' });
     } catch (error) {
-      console.error(error);
+      console.error("User denied account access", error);
     }
   };
+
 
   const handleBuyNow = async () => {
     if (!tokenSaleContract || !web3) return;
@@ -89,13 +92,6 @@ export function SignInThree() {
     }
   };
 
-  // useEffect(() => {
-  //   // Reset transaction success state after 5 seconds
-  //   const resetTransactionState = setTimeout(() => {
-  //     setTransactionSuccess(false);
-  //   }, 5000);
-  //   return () => clearTimeout(resetTransactionState);
-  // }, [transactionSuccess]);
 
   return (
     <section>

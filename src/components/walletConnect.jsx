@@ -1,18 +1,14 @@
 import React, { useState } from "react";
-import Contract from "./Contract.json"; // Importing contract ABI and address
+import Contract from "./Contract.json"; 
 
 function ButtonDisplay() {
     const [connectedAddress, setConnectedAddress] = useState(null);
-    const [tokenImported, setTokenImported] = useState(false); // State to track if token is imported
+    const [tokenImported, setTokenImported] = useState(false); 
 
     const connectToMetaMask = async () => {
         try {
-            // Check if MetaMask is installed
             if (window.ethereum) {
-                // Request account access
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                
-                // MetaMask is connected, you can perform further actions here
                 console.log("MetaMask connected!");
                 setConnectedAddress(accounts[0]);
             } else {
@@ -25,7 +21,7 @@ function ButtonDisplay() {
 
     const disconnectFromMetaMask = () => {
         setConnectedAddress(null);
-        setTokenImported(false); // Reset tokenImported state
+        setTokenImported(false); 
         console.log("Disconnected from MetaMask");
     };
 
@@ -49,21 +45,20 @@ function ButtonDisplay() {
                 return;
             }
 
-            // Request to add the token to MetaMask
             await window.ethereum.request({
                 method: 'wallet_watchAsset',
                 params: {
                     type: 'ERC20',
                     options: {
-                        address: Contract.Dscaddress, // Token contract address
-                        symbol: 'DSC' , // Token symbol
-                        decimals: 18, // Token decimals
+                        address: Contract.Dscaddress, 
+                        symbol: 'DSC' , 
+                        decimals: 18, 
                     }
                 }
             });
 
             console.log("Token added to MetaMask successfully.");
-            setTokenImported(true); // Set tokenImported state to true
+            setTokenImported(true); 
         } catch (error) {
             console.error("Error adding token to MetaMask:", error);
             alert("Failed to add token. Please try again.");
@@ -77,7 +72,7 @@ function ButtonDisplay() {
                     type="button"
                     className="rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
                     onClick={addTokenToMetaMask} 
-                    disabled={tokenImported} // Disable button if token is imported
+                    disabled={tokenImported} 
                 >
                     {tokenImported ? "Token Imported Successfully" : "Add DSC To Wallet"}
                 </button>

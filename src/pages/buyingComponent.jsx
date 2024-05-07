@@ -1,29 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import Web3 from 'web3'; // Make sure to install web3 via npm 
+import Web3 from 'web3'; 
 import { useNavigate } from 'react-router-dom';
 
-// Import your ABI files
 import Contract from '../components/Contract.json';
 import TokenSale from '../components/TokenSale.json';
 
 export function SignInThree() {
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate(); 
   const [dsCoinQuantity, setDsCoinQuantity] = useState('');
   const [ethToPay, setEthToPay] = useState(0);
   const [web3, setWeb3] = useState(null);
   const [tokenSaleContract, setTokenSaleContract] = useState(null);
   const [transactionSuccess, setTransactionSuccess] = useState(false);
-  const [loading, setLoading] = useState(false); // New state variable for loading status
-
+  const [loading, setLoading] = useState(false); 
   const [transactionDetails, setTransactionDetails] = useState({});
-  
+  const [showProcessingPopup, setShowProcessingPopup] = useState(false);
+
   const handleGoToTransactions = () => {
-    // Navigate to /transactionToken route
     navigate('/transactionToken');
   };
 
   useEffect(() => {
-    // Initialize web3 and set the provider
     if (window.ethereum && !web3) {
       setWeb3(new Web3(window.ethereum));
     }
@@ -42,7 +39,6 @@ export function SignInThree() {
     setEthToPay(value * 0.0005);
   };
 
-  
   const handleConnectWallet = async () => {
     if (!window.ethereum) {
       alert("Please install MetaMask!");
@@ -55,22 +51,21 @@ export function SignInThree() {
     }
   };
 
-
   const handleBuyNow = async () => {
     if (!tokenSaleContract || !web3) return;
 
     try {
-      setLoading(true); // Set loading state to true when transaction begins
+      setShowProcessingPopup(true); // Show the processing popup
       const accounts = await web3.eth.getAccounts();
-      const numberOfTokens = web3.utils.toWei(dsCoinQuantity.toString(), 'ether'); // Convert to Wei
+      const numberOfTokens = web3.utils.toWei(dsCoinQuantity.toString(), 'ether'); 
       const tx = await tokenSaleContract.methods.buy(accounts[0]).send({ from: accounts[0], value: web3.utils.toWei(ethToPay.toString(), 'ether') });
       console.log(tx);
       alert('Transaction successful!');
 
       const transactionReceipt = await web3.eth.getTransactionReceipt(tx.transactionHash);
       const transactionFrom = accounts[0];
-      const transactionTo = tokenSaleContract.options.address; // Assuming the contract address is the recipient
-      const transactionAmount = web3.utils.fromWei(transactionReceipt.cumulativeGasUsed.toString(), 'ether'); // This might not be accurate for gas used, adjust as needed
+      const transactionTo = tokenSaleContract.options.address; 
+      const transactionAmount = web3.utils.fromWei(transactionReceipt.cumulativeGasUsed.toString(), 'ether'); 
       
       setTransactionDetails({
         from: transactionFrom,
@@ -88,10 +83,9 @@ export function SignInThree() {
       setDsCoinQuantity('');
       setEthToPay(0);
     } finally {
-      setLoading(false); // Set loading state to false when transaction completes
+      setShowProcessingPopup(false); // Hide the processing popup
     }
   };
-
 
   return (
     <section>
@@ -133,12 +127,12 @@ export function SignInThree() {
               <button
                 type="button"
                 onClick={web3 ? handleBuyNow : handleConnectWallet}
-                disabled={transactionSuccess || loading} // Disable button if transaction success or loading
+                disabled={transactionSuccess || loading} 
                 className={`inline-flex w-full items-center justify-center rounded-md bg-black px-3.5 py-2.5 font-semibold leading-7 text-white hover:bg-black/80 ${
                   web3 ? '' : 'cursor-pointer'
                 }`}
               >
-                {loading ? ( // Show loader if loading is true
+                {loading ? ( 
                   <div className="flex items-center">
                     <div className="h-4 w-4 border-t-2 border-b-2 border-white rounded-full animate-spin mr-2"></div>
                     Processing...
@@ -154,7 +148,7 @@ export function SignInThree() {
               <button
                 type="button"
                 onClick={handleGoToTransactions}
-                class=" mt-4 relative inline-flex w-full items-center justify-center rounded-md border border-gray-400 bg-white px-3.5 py-2.5 font-semibold text-gray-700 transition-all duration-200 hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black focus:outline-none"
+                className=" mt-4 relative inline-flex w-full items-center justify-center rounded-md border border-gray-400 bg-white px-3.5 py-2.5 font-semibold text-gray-700 transition-all duration-200 hover:bg-gray-100 hover:text-black focus:bg-gray-100 focus:text-black focus:outline-none"
               >
                 Go To Transactions
               </button>
@@ -162,21 +156,30 @@ export function SignInThree() {
           </div>
         </div>
       </div>
-
-     
+      {showProcessingPopup && (
+        <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-900 bg-opacity-50">
+        <div className="bg-white p-8 rounded-lg">
+          <div className="flex flex-col items-center justify-center">
+            <div className="h-8 w-8 border-t-2 border-b-2 border-black rounded-full animate-spin mb-4"></div>
+            <p className="text-center">Processing The Transaction</p>
+          </div>
+        </div>
+      </div>
+      
+      )}
       {transactionSuccess && (
-  <div className="mt-4 p-4 border border-gray-200 rounded-lg">
-    <h3 className="text-lg font-semibold">Transaction Details</h3>
-    <ul className="list-disc list-inside mt-2">
-      <li>From: {transactionDetails.from}</li>
-      <li>To: {transactionDetails.to}</li>
-      <li>Transaction Hash: {transactionDetails.transactionHash}</li>
-      <li>Amount: {transactionDetails.amount} ETH</li>
-    </ul>
-  </div>
-)}
+        <div className="mt-4 p-4 border border-gray-200 rounded-lg">
+          <h3 className="text-lg font-semibold">Transaction Details</h3>
+          <ul className="list-disc list-inside mt-2">
+            <li>From: {transactionDetails.from}</li>
+            <li>To: {transactionDetails.to}</li>
+            <li>Transaction Hash: {transactionDetails.transactionHash}</li>
+            <li>Amount: {transactionDetails.amount} ETH</li>
+          </ul>
+        </div>
+      )}
     </section>
   );
 }
 
-export default SignInThree
+export default SignInThree;

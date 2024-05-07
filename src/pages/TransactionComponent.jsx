@@ -25,14 +25,14 @@ const TransactionTable = () => {
                 </tr>
               </thead>
               <tbody>
-                {/* Add rows here */}
+                
               </tbody>
             </table>
           </div>
         </div>
       </div>
       <br />
-      <div className="flex justify-center"> {/* Center the button */}
+      <div className="flex justify-center"> 
         <button
           type="button"
           onClick={handleGoToBuy}

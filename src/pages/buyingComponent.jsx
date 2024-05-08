@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Web3 from 'web3'; 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 import Contract from '../components/Contract.json';
 import TokenSale from '../components/TokenSale.json';
+import TransactionTable from '../pages/TransactionComponent'
 
 export function SignInThree() {
   const navigate = useNavigate(); 
@@ -16,9 +17,10 @@ export function SignInThree() {
   const [transactionDetails, setTransactionDetails] = useState({});
   const [showProcessingPopup, setShowProcessingPopup] = useState(false);
 
-  const handleGoToTransactions = () => {
+    const handleGoToTransactions = () => {
     navigate('/transactionToken');
   };
+
 
   useEffect(() => {
     if (window.ethereum && !web3) {
@@ -55,23 +57,25 @@ export function SignInThree() {
     if (!tokenSaleContract || !web3) return;
 
     try {
-      setShowProcessingPopup(true); // Show the processing popup
+      setShowProcessingPopup(true);
       const accounts = await web3.eth.getAccounts();
       const numberOfTokens = web3.utils.toWei(dsCoinQuantity.toString(), 'ether'); 
       const tx = await tokenSaleContract.methods.buy(accounts[0]).send({ from: accounts[0], value: web3.utils.toWei(ethToPay.toString(), 'ether') });
       console.log(tx);
       alert('Transaction successful!');
 
-      const transactionReceipt = await web3.eth.getTransactionReceipt(tx.transactionHash);
-      const transactionFrom = accounts[0];
-      const transactionTo = tokenSaleContract.options.address; 
-      const transactionAmount = web3.utils.fromWei(transactionReceipt.cumulativeGasUsed.toString(), 'ether'); 
+     navigate('/transactionToken', { state: { transactionDetails: {
+        from: accounts[0],
+        to: tokenSaleContract.options.address,
+        transactionHash: tx.transactionHash,
+        amount: web3.utils.fromWei(tx.cumulativeGasUsed.toString(), 'ether')
+      } }});
       
       setTransactionDetails({
-        from: transactionFrom,
-        to: transactionTo,
+        from: accounts[0],
+        to: tokenSaleContract.options.address,
         transactionHash: tx.transactionHash,
-        amount: transactionAmount,
+        amount: web3.utils.fromWei(tx.cumulativeGasUsed.toString(), 'ether')
       });
   
       setTransactionSuccess(true);
@@ -83,7 +87,7 @@ export function SignInThree() {
       setDsCoinQuantity('');
       setEthToPay(0);
     } finally {
-      setShowProcessingPopup(false); // Hide the processing popup
+      setShowProcessingPopup(false); 
     }
   };
 
@@ -178,6 +182,7 @@ export function SignInThree() {
           </ul>
         </div>
       )}
+      
     </section>
   );
 }

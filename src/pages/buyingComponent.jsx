@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 
 import Contract from '../components/Contract.json';
 import TokenSale from '../components/TokenSale.json';
-import TransactionTable from '../pages/TransactionComponent'
+import TransactionTable from './transactionComponent';
 
 export function SignInThree() {
   const navigate = useNavigate(); 
@@ -68,14 +68,15 @@ export function SignInThree() {
         from: accounts[0],
         to: tokenSaleContract.options.address,
         transactionHash: tx.transactionHash,
-        amount: web3.utils.fromWei(tx.cumulativeGasUsed.toString(), 'ether')
+        amount: `${ethToPay} ETH`
       } }});
       
       setTransactionDetails({
         from: accounts[0],
         to: tokenSaleContract.options.address,
         transactionHash: tx.transactionHash,
-        amount: web3.utils.fromWei(tx.cumulativeGasUsed.toString(), 'ether')
+        amount: `${ethToPay} ETH`
+        
       });
   
       setTransactionSuccess(true);

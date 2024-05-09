@@ -2,7 +2,7 @@ import './App.css'
 import ExampleNavbarTwo from "./components/Navbar"
 import ButtonDisplay from "./components/walletConnect"
 import SignInThree  from "./pages/buyingComponent"
-import TransactionTable from './pages/TransactionComponent'
+import TransactionTable from './pages/transactionComponent'
 import {BrowserRouter, Routes, Route} from 'react-router-dom'
 
 function App() {
